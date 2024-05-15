@@ -3,6 +3,7 @@
     <string name="motto">Plan your day with\nWeather.Sy</string>
     <string name="city">Mumbai</string>
     <string name="temp">31&#xb0;C</string>
+    <string name="celsius_sign">&#xb0;C</string>
     <string name="min_max">Min :23.22&#xb0;C\nMax :25.26&#xb0;C</string>
     <string name="today">Today</string>
     <string name="celsius">celsius</string>
@@ -13,4 +14,5 @@
     <string name="sunrise">Sunrise</string>
     <string name="sunset">Sunset</string>
     <string name="sea">Sea</string>
+    <string name="sunny_clear">Sunny Clear</string>
 </resources>

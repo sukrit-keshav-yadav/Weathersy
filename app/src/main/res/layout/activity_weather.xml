@@ -27,13 +27,14 @@
         android:id="@+id/cons_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="@id/searchView">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/cityText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="10dp"
@@ -97,7 +98,7 @@
         android:layout_marginStart="10dp"
         android:gravity="center"
         android:text="@string/min_max"
-        android:textColor="black"
+        android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/guideline5"
         app:layout_constraintStart_toStartOf="@id/guideline3"
@@ -108,7 +109,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/merriweathersans_semibold"
-        android:text="Sunny Clear"
+        android:text="@string/sunny_clear"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -117,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@id/guideline5" />
 
     <TextView
-        android:id="@+id/day"
+        android:id="@+id/day_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -138,7 +139,7 @@
         android:background="@drawable/frame_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/day">
+        app:layout_constraintTop_toBottomOf="@+id/day_date">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -172,7 +173,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/conditions" />
+                    android:src="@drawable/conditions"
+                    android:contentDescription="@string/condition" />
 
                 <TextView
                     android:id="@+id/condition_val"
@@ -207,7 +209,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/humidity" />
+                    android:src="@drawable/humidity"
+                    android:contentDescription="@string/humidity" />
 
                 <TextView
                     android:id="@+id/humidity_val"
@@ -241,7 +244,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/wind" />
+                    android:src="@drawable/wind"
+                    android:contentDescription="@string/wind" />
 
                 <TextView
                     android:id="@+id/wind_val"
@@ -276,7 +280,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/sunrise" />
+                    android:src="@drawable/sunrise"
+                    android:contentDescription="@string/sunrise" />
 
                 <TextView
                     android:id="@+id/sunrise_val"
@@ -311,7 +316,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/sunset" />
+                    android:src="@drawable/sunset"
+                    android:contentDescription="@string/sunset" />
 
                 <TextView
                     android:id="@+id/sunset_val"
@@ -346,7 +352,8 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/sea" />
+                    android:src="@drawable/sea"
+                    android:contentDescription="@string/sea" />
 
                 <TextView
                     android:id="@+id/sea_val"
