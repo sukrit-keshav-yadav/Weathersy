@@ -25,7 +25,7 @@ class WeatherActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityWeatherBinding
-    var city: String ?=null
+    var city: String? = null
     var temperature: Double? = 0.0
     var condition: String? = null
     var minTemp: String? = null
@@ -46,7 +46,8 @@ class WeatherActivity : AppCompatActivity() {
 
         searchWeatherOfACity()
 
-        val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
         if (sharedPreferences.contains(Constants.IS_AVAILABLE)) {
             getDataFromSharedPref()
         } else {
@@ -72,7 +73,8 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun getDataFromSharedPref() {
-        val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
         city = sharedPreferences.getString(Constants.CITY, "mumbai").toString()
         temperature = sharedPreferences.getLong(Constants.TEMP, 34).toDouble()
         minTemp = sharedPreferences.getString(Constants.MIN_TEMP, "33.94").toString()
@@ -93,18 +95,23 @@ class WeatherActivity : AppCompatActivity() {
     private fun getWeatherData(cityName: String) {
 
         binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.isIndeterminate = true
         binding.progressBar.animate()
-        val response = retrofitInstance.retrofit.getWeatherDetails(cityName, "f6bf60a6801514b1af4576964676a629", "metric")
+        val response = retrofitInstance.retrofit.getWeatherDetails(
+            cityName,
+            "f6bf60a6801514b1af4576964676a629",
+            "metric"
+        )
 
         response.enqueue(object : Callback<WeatherRes> {
             override fun onResponse(call: Call<WeatherRes>, response: Response<WeatherRes>) {
                 val responseBody = response.body()
-                if (responseBody?.cod == 200) {
-                    if (response.isSuccessful) {
+                if (response.isSuccessful) {
+                    if (responseBody?.cod == 200) {
                         binding.progressBar.visibility = View.INVISIBLE
                         responseBody.let {
                             Log.d("TAG", "$responseBody")
-                            city=it.name
+                            city = it.name
                             temperature = it.main.temp
                             windSpeed = it.wind.speed.toString()
                             condition = it.weather.firstOrNull()?.main ?: "Unknown"
@@ -121,7 +128,11 @@ class WeatherActivity : AppCompatActivity() {
                             changeUiBasedOnCondition(condition!!)
 
 
-                            val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
+                            val sharedPreferences: SharedPreferences =
+                                this@WeatherActivity.getSharedPreferences(
+                                    "application",
+                                    MODE_PRIVATE
+                                )
                             val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
                             editor.clear()
@@ -144,9 +155,14 @@ class WeatherActivity : AppCompatActivity() {
                             editor.apply()
 
                         }
+                    }else {
+                        Toast.makeText(
+                            this@WeatherActivity,
+                            "city not found",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        binding.progressBar.visibility=View.INVISIBLE
                     }
-                }else{
-                    if (responseBody?.cod==404) Toast.makeText(this@WeatherActivity,"city not found",Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -165,7 +181,7 @@ class WeatherActivity : AppCompatActivity() {
                 binding.lottieCondition.setAnimation(R.raw.sun)
             }
 
-            "Partly Clouds", "Clouds", "Mist", "Foggy","Haze", "Overcast" -> {
+            "Partly Clouds", "Clouds", "Mist", "Foggy", "Haze", "Overcast" -> {
                 binding.root.setBackgroundResource(R.drawable.cloudy)
                 binding.lottieCondition.setAnimation(R.raw.cloud)
             }
