@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import com.hyskytech.weathersy.Constants.Constants
 import com.hyskytech.weathersy.R
-import com.hyskytech.weathersy.api.ApiInterface
 import com.hyskytech.weathersy.api.retrofitInstance
 import com.hyskytech.weathersy.data.WeatherRes
 import com.hyskytech.weathersy.databinding.ActivityWeatherBinding
@@ -25,9 +25,8 @@ class WeatherActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityWeatherBinding
-    lateinit var city: String
-
-    var temperature: String? = null
+    var city: String ?=null
+    var temperature: Double? = 0.0
     var condition: String? = null
     var minTemp: String? = null
     var maxTemp: String? = null
@@ -44,7 +43,10 @@ class WeatherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreferences: SharedPreferences = this.getSharedPreferences("application", MODE_PRIVATE)
+
+        searchWeatherOfACity()
+
+        val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
         if (sharedPreferences.contains(Constants.IS_AVAILABLE)) {
             getDataFromSharedPref()
         } else {
@@ -70,9 +72,9 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun getDataFromSharedPref() {
-        val sharedPreferences: SharedPreferences = this.getSharedPreferences("application", MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
         city = sharedPreferences.getString(Constants.CITY, "mumbai").toString()
-        temperature = sharedPreferences.getString(Constants.TEMP, "34").toString()
+        temperature = sharedPreferences.getLong(Constants.TEMP, 34).toDouble()
         minTemp = sharedPreferences.getString(Constants.MIN_TEMP, "33.94").toString()
         maxTemp = sharedPreferences.getString(Constants.MAX_TEMP, "34.99").toString()
         day = sharedPreferences.getString(Constants.DAY, "Wednesday").toString()
@@ -89,16 +91,21 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun getWeatherData(cityName: String) {
-        val response =
-            retrofitInstance.retrofit.getWeatherDetails(cityName, ApiInterface.API_KEY, "metric")
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.animate()
+        val response = retrofitInstance.retrofit.getWeatherDetails(cityName, "f6bf60a6801514b1af4576964676a629", "metric")
 
         response.enqueue(object : Callback<WeatherRes> {
             override fun onResponse(call: Call<WeatherRes>, response: Response<WeatherRes>) {
                 val responseBody = response.body()
                 if (responseBody?.cod == 200) {
                     if (response.isSuccessful) {
+                        binding.progressBar.visibility = View.INVISIBLE
                         responseBody.let {
-                            temperature = it.main.temp.toInt().toString()
+                            Log.d("TAG", "$responseBody")
+                            city=it.name
+                            temperature = it.main.temp
                             windSpeed = it.wind.speed.toString()
                             condition = it.weather.firstOrNull()?.main ?: "Unknown"
                             minTemp = it.main.temp_min.toString()
@@ -110,13 +117,17 @@ class WeatherActivity : AppCompatActivity() {
                             day = getCurrentDay()
                             date = getCurrentDate()
 
+                            updateDataOnUi()
+                            changeUiBasedOnCondition(condition!!)
+
+
                             val sharedPreferences: SharedPreferences = this@WeatherActivity.getSharedPreferences("application", MODE_PRIVATE)
                             val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
                             editor.clear()
                             editor.apply {
                                 putString(Constants.CITY, city)
-                                putString(Constants.TEMP, temperature)
+                                putLong(Constants.TEMP, temperature!!.toLong())
                                 putString(Constants.MIN_TEMP, minTemp)
                                 putString(Constants.MAX_TEMP, maxTemp)
                                 putString(Constants.DAY, day)
@@ -132,8 +143,6 @@ class WeatherActivity : AppCompatActivity() {
 
                             editor.apply()
 
-                            updateDataOnUi()
-                            changeUiBasedOnCondition(condition!!)
                         }
                     }
                 }else{
@@ -153,22 +162,22 @@ class WeatherActivity : AppCompatActivity() {
         when (condition) {
             "Clear Sky", "Sunny", "Clear" -> {
                 binding.root.setBackgroundResource(R.drawable.sunny_clear)
-                binding.lottieCondition.setAnimation(R.raw.sunny)
+                binding.lottieCondition.setAnimation(R.raw.sun)
             }
 
-            "Partly Clouds", "Clouds", "Mist", "Foggy", "Overcast" -> {
+            "Partly Clouds", "Clouds", "Mist", "Foggy","Haze", "Overcast" -> {
                 binding.root.setBackgroundResource(R.drawable.cloudy)
-                binding.lottieCondition.setAnimation(R.raw.cloudy)
+                binding.lottieCondition.setAnimation(R.raw.cloud)
             }
 
-            "Light Rain", "Drizzle", "Moderate Rain", "Showers", "Heavy Rain" -> {
+            "Light Rain", "Drizzle", "Rain", "Moderate Rain", "Showers", "Heavy Rain" -> {
                 binding.root.setBackgroundResource(R.drawable.rainy)
-                binding.lottieCondition.setAnimation(R.raw.rainy)
+                binding.lottieCondition.setAnimation(R.raw.rain)
             }
 
             "Light Snow", "Moderate Snow", "Heavy Snow", "Blizzard" -> {
                 binding.root.setBackgroundResource(R.drawable.snowwy)
-                binding.lottieCondition.setAnimation(R.raw.snowwy)
+                binding.lottieCondition.setAnimation(R.raw.snow)
             }
         }
         binding.lottieCondition.playAnimation()
@@ -194,9 +203,9 @@ class WeatherActivity : AppCompatActivity() {
     private fun updateDataOnUi() {
         binding.apply {
             consMain.visibility = View.VISIBLE
-            tempText.text = "$temperature${R.string.celsius_sign}"
+            tempText.text = "${temperature!!.toInt()}°C"
             cityText.text = city
-            minMaxTemp.text = "Max :$maxTemp${R.string.celsius_sign}\nMin :$minTemp${R.string.celsius_sign}"
+            minMaxTemp.text = "Max :$maxTemp°C\nMin :$minTemp°C"
             conditionText.text = "$condition"
             dayDate.text = "$day  $date"
             conditionVal.text = "$condition"
