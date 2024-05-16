@@ -127,7 +127,7 @@
             android:fontFamily="@font/merriweathersans_semibold"
             android:text="@string/sunny_clear"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="@+id/guideline"
