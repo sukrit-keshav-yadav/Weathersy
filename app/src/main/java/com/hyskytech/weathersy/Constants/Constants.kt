@@ -1,7 +1,6 @@
 package com.hyskytech.weathersy.Constants
 
-class Constants {
-    companion object{
+object Constants {
         const val CITY = "city"
         const val TEMP = "temp"
         const val DAY = "day"
@@ -15,5 +14,4 @@ class Constants {
         const val SUNSET = "sunset"
         const val SEA = "sea"
         const val IS_AVAILABLE = "is_available"
-    }
 }
